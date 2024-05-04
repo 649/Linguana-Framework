@@ -1,6 +1,6 @@
 '''
-LINGUANA v1.0
-Linguistics Analyzer
+LINGUANA v1.1
+Linguistics Analyser
 Author: @037
 
 Application designed to take apart bodies of text and do comparative linguistics analysis.
@@ -12,31 +12,34 @@ import hashlib
 from itertools import islice
 from autocorrect import Speller
 
-def n_gram_analyzer(body, n=3, top=10):
+DEBUG = 0
+
+def n_gram_analyser(body, n=3, top=10):
     '''
     Function is designed to take in an integer factorial to count from
     Enumerates N-gram word pairings in a body of text
     '''
-    def chunk_list(input_list, n):
-        return [input_list[i:i+n] for i in range(0, len(input_list), n)]
+    def chunk_list(input_list, n, shift=0):
+        shifted_list = input_list[shift:] + input_list[:shift]
+        return [shifted_list[i:i+n] for i in range(0, len(input_list), n)]
     
-    print("[*] Starting N-gram Analyzer")
     ngram = {}
     for i in range(n, 1, -1):
         print()
         print(f"[*] Taking {i}-gram of processed word list...")
         word_frequency = {}
-        for lines in body:
-            chunked_lines = chunk_list(lines, i)
-            for chunk in chunked_lines:
-                words = ''
-                for word in chunk:
-                    words += word + ':'
-                try:
-                    if(word_frequency[words] > 0):
-                        word_frequency[words] = word_frequency[words] + 1
-                except KeyError:
-                    word_frequency[words] = 1
+        for j in range(0, i):
+            for lines in body:
+                chunked_lines = chunk_list(lines, i, j)
+                for chunk in chunked_lines:
+                    words = ''
+                    for word in chunk:
+                        words += word + ':'
+                    try:
+                        if(word_frequency[words] > 0):
+                            word_frequency[words] = word_frequency[words] + 1
+                    except KeyError:
+                        word_frequency[words] = 1
         # Sorting using a for loop
         sorted_dict = {}
         for key in sorted(word_frequency, key=word_frequency.get, reverse=True):
@@ -56,12 +59,12 @@ def n_gram_analyzer(body, n=3, top=10):
         print(f"[*] Top {top} {i}-gram factorial words fingerprint: {conjoined_checksum}")
         print()
 
-def spelling_analyzer(body, top=10):
+def spelling_analyser(body, top=10):
     '''
     Function that takes in a body of text
     returns a list of spelling mistakes
     '''
-    print("[*] Starting Spelling Analyzer")
+    
     misspelling_frequency = {}
     for lines in body:
         for word in lines:
@@ -91,12 +94,12 @@ def spelling_analyzer(body, top=10):
     print(f"[*] Top {top} misspelled words fingerprint: {conjoined_checksum}")
     print()
 
-def word_frequency_analyzer(body, top=10):
+def word_frequency_analyser(body, top=10):
     '''
     Function that takes in a body of text
     returns every word used and its frequency
     '''
-    print("[*] Starting Word Frequency Analyzer")
+    
     word_frequency = {}
     for lines in body:
         for word in lines:
@@ -127,10 +130,10 @@ def word_frequency_analyzer(body, top=10):
 
 if __name__ == "__main__":
     '''
-    Main function for running multi threads for each analyzer
+    Main function for running multi threads for each analyser
     '''
-    print("[*] LINGUANA v1.0")
-    print("[*] Linguistics Analyzer")
+    print("[*] LINGUANA v1.1")
+    print("[*] Linguistics Analyser")
     spell = Speller(lang='en')
     if(len(sys.argv) > 2 and sys.argv[1] == '--input'):
         fn = sys.argv[2]
@@ -142,7 +145,7 @@ if __name__ == "__main__":
                 i = 0
                 print("------[BEGIN FILE PREVIEW]------")
                 for line in target:
-                    print(line)
+                    print(line.decode('utf-8').rstrip())
                     if(i == 10):
                         break
                     else:
@@ -154,26 +157,31 @@ if __name__ == "__main__":
                 if(len(delimiter_list) == 1 and delimiter_list[0] == ''):
                     delimiter_list = [' ']
                 parsed_words = []
-                i = 0
                 print("[*] Processing words... Please wait.")
                 for line in target:
-                    line = line.decode('utf-8')
-                    print(f"[*] Line: {line}")
-                    for delimiter in delimiter_list:
-                        print(f"[*] Delimiter: {delimiter}")
-                        line = line.replace(delimiter, ' ')
-                    parsed_words.append(line.split(' '))
-                    i += 1
-                print("[*] Processed word list: ")
-                print(parsed_words)
-                for word in parsed_words:
-                    print(word)
+                    line = line.decode('utf-8').rstrip()
+                    if(line == ''):
+                        pass
+                    else:
+                        if(DEBUG == 1):
+                            print(f"[*] Line: {line}")
+                        for delimiter in delimiter_list:
+                            if(DEBUG == 1):
+                                print(f"[*] Delimiter: {delimiter}")
+                            line = line.replace(delimiter, ' ')
+                        parsed_words.append(line.split(' '))
+                if(DEBUG == 1):
+                    print("[*] Processed word list: ")
+                    print(parsed_words)
+                    for word in parsed_words:
+                        print(word)
                 print()
-                word_frequency_analyzer(parsed_words)
-                print()
-                n_gram_analyzer(parsed_words)
-                print()
-                spelling_analyzer(parsed_words)
+                print("------[BEGIN WORD FREQUENCY ANALYSER]------")
+                word_frequency_analyser(parsed_words)
+                print("------[BEGIN N-GRAM ANALYSER]------")
+                n_gram_analyser(parsed_words)
+                print("------[BEGIN SPELLING ANALYSER]------")
+                spelling_analyser(parsed_words)
 
     else:
         print(f"[*] Scan file: {sys.argv[0]} --input PATH")
