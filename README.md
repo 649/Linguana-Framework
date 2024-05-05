@@ -11,6 +11,19 @@
 ```
 pip install -r requirements.txt
 ```
+2. Requires placing a GGUF formatted model in this directory
+```
+./vendor/llama.guard/llama-guard-2-8b.f16.gguf
+```
+3. Requires compiling ![llama.cpp](https://github.com/ggerganov/llama.cpp) in this directory
+```
+./vendor/llama.cpp/main
+```
+4. Requires placing a `prompt.txt` file in 
+```
+./vendor/llama.guard/prompt.txt
+```
+see the ![examples](https://github.com/649/Linguana-Framework/tree/main/examples/) section for more info
 
 ## Usage
 1. Fingerprint style of document
