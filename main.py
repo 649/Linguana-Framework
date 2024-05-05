@@ -1,7 +1,8 @@
 '''
 LINGUANA v1.4
-Linguistics Analyser
-Author: @037
+Linguistics Fingerprint Analyser
+Author: https://x.com/037
+Repo: https://github.com/649/Linguana/
 
 Application designed to take apart bodies of text and do comparative linguistics analysis.
 Purpose is to draw conclusions if two bodies of text share authorship.
@@ -9,11 +10,13 @@ Purpose is to draw conclusions if two bodies of text share authorship.
 import os
 import sys
 import hashlib
-from itertools import islice
 from autocorrect import Speller
 from _thread import start_new_thread
 
-DEBUG = 1
+if(sys.argv[-1] == "--debug"):
+    DEBUG = 1
+else:
+    DEBUG = 0
 TOP_LIST = 10
 N_TERMS = 3
 STYLE_FINGERPRINT = []
@@ -26,11 +29,11 @@ LOGO = '''
          .-~;`               `\           ' ';;;;;__.~`
        .' .'          `'.     |           /  /;''
         \\/      .---\'''``)   /'-._____.--'\  \\
-  jgs  _/|    (`        /  /`              `\ \__
-',    `/- \   \      __/  (_                /-\-\-`
-  `;'-..___)   |     `/-\-\-`
-    `-.       .'
-       `~~~~``
+       _/|    (`        /  /`              `\ \__
+',    `/- \   \      __/  (_ ______________ /-\-\-`_______________
+__`;'-..___)   |_____`/-\-\-` __- _--- -- __   ___   ____ -- _- --|   /
+    `-.       .' ___ ---___---_--  -- --    Author: @037  - ---_ -|--|
+_______`~~~~``  __________________________________________________|   \\
  ██▓     ██▓ ███▄    █   ▄████  █    ██  ▄▄▄       ███▄    █  ▄▄▄      
 ▓██▒    ▓██▒ ██ ▀█   █  ██▒ ▀█▒ ██  ▓██▒▒████▄     ██ ▀█   █ ▒████▄    
 ▒██░    ▒██▒▓██  ▀█ ██▒▒██░▄▄▄░▓██  ▒██░▒██  ▀█▄  ▓██  ▀█ ██▒▒██  ▀█▄  
@@ -40,7 +43,6 @@ LOGO = '''
 ░ ░ ▒  ░ ▒ ░░ ░░   ░ ▒░  ░   ░ ░░▒░ ░ ░   ▒   ▒▒ ░░ ░░   ░ ▒░  ▒   ▒▒ ░
   ░ ░    ▒ ░   ░   ░ ░ ░ ░   ░  ░░░ ░ ░   ░   ▒      ░   ░ ░   ░   ▒   
     ░  ░ ░           ░       ░    ░           ░  ░         ░       ░  ░
-                            Author: @037
 
 '''
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linguana v{{ form.version }}</title>
+</head>
+<body>
+    <pre>
+{{ form.logo }}
+Version: v{{ form.version }}
+Maximum top value: {{ form.top_list }}
+Maximum n-gram value: {{ form.n_terms }}
+    </pre>
+    <form method="POST" action="/">
+        {{ form.hidden_tag() }}
+        {{ form.input_field.label }}
+        {{ form.input_field }}<br><br>
+        {{ form.delim_field.label }}
+        {{ form.delim_field }}<br><br>
+        {{ form.data_input.label }}<br>
+        {{ form.data_input(cols=50, rows=10) }}<br>
+        {{ form.submit() }}
+    </form>
+</body>
+</html>

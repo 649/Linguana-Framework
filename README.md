@@ -19,6 +19,10 @@ python3 ./main.py --input <PATH TO TEXT FILE>
 ```
 python3 ./main.py --input <PATH> --output <PATH>
 ```
+3. Launch collaborative web server
+```
+python3 ./server.py
+```
 
 ## Features
 * N-gram factorial style pairing
@@ -28,7 +32,5 @@ python3 ./main.py --input <PATH> --output <PATH>
 * Characters per word hits tracking
 
 ## Future Plans
-* Web UI for tracking and uploading files
-* Database to store information on assets
 * Create OCR features for picking apart non-text data
 * Llama Guard v2 integration for categorizing text
