@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ```
 ./vendor/llama.guard/llama-guard-2-8b.f16.gguf
 ```
-3. Requires compiling ![llama.cpp](https://github.com/ggerganov/llama.cpp) in this directory
+3. Requires compiling [llama.cpp](https://github.com/ggerganov/llama.cpp) in this directory
 ```
 ./vendor/llama.cpp/main
 ```
@@ -23,7 +23,7 @@ pip install -r requirements.txt
 ```
 ./vendor/llama.guard/prompt.txt
 ```
-see the ![examples](https://github.com/649/Linguana-Framework/tree/main/examples/) section for more info
+see the [examples](https://github.com/649/Linguana-Framework/tree/main/examples/) section for more info
 
 ## Usage
 1. Fingerprint style of document
