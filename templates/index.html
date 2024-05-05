@@ -9,6 +9,7 @@
     <pre>
 {{ form.logo }}
 Version: v{{ form.version }}
+Server: v{{ form.server }}
 Maximum top value: {{ form.top_list }}
 Maximum n-gram value: {{ form.n_terms }}
     </pre>
@@ -22,5 +23,6 @@ Maximum n-gram value: {{ form.n_terms }}
         {{ form.data_input(cols=50, rows=10) }}<br>
         {{ form.submit() }}
     </form>
+    <a href="/saved" target="_blank">> goto saved profiles</a>
 </body>
 </html>

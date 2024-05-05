@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linguana - Saved</title>
+    <style>
+ins {
+    text-decoration: none;
+    background-color: #5eff00;
+}
+
+del {
+    text-decoration: line-through;
+    background-color: #ff002b;
+    color: #000000;
+}
+    </style>
+</head>
+<body>
+    <h1>Saved</h1>
+    <select id="profile1"></select> <select id="profile2"></select> <button onclick="checker();">Compare</button>
+    <pre id="results"></pre>
+    <ul>
+        {% for item in data %}
+            <li>{{ item[0] }}: <br> <pre id="prefix{{ item[0] }}">{{ item[1] }}</pre></li>
+        {% endfor %}
+    </ul>
+    <script src="{{ url_for('static', filename='js/htmldiff.js') }}"></script>
+    <script>
+// Function to populate the select dropdown with IDs that start with a specific prefix
+function populateSelect(id) {
+    var select = document.getElementById(id);
+    var prefix = 'prefix'; 
+
+    // Clear existing options
+    select.innerHTML = '';
+
+    // Add a default option
+    var defaultOption = document.createElement('option');
+    defaultOption.text = 'Select profile';
+    defaultOption.value = '';
+    select.appendChild(defaultOption);
+
+    // Select elements whose IDs start with the specified prefix
+    var elements = document.querySelectorAll('[id^="' + prefix + '"]');
+    elements.forEach(function(element) {
+        var option = document.createElement('option');
+        option.text = element.id;
+        option.value = element.id;
+        select.appendChild(option);
+    });
+}
+
+function checker(){
+    let option1 = document.getElementById(document.getElementById('profile1').value).innerHTML;
+    let option2 = document.getElementById(document.getElementById('profile2').value).innerHTML;
+    let output = htmldiff(option1, option2);
+    document.getElementById("results").innerHTML = output;
+}
+
+// Call the function to populate the select dropdown
+populateSelect("profile1");
+populateSelect("profile2");
+    </script>
+</body>
+</html>
