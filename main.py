@@ -1,5 +1,5 @@
 '''
-LINGUANA v1.2
+LINGUANA v1.3
 Linguistics Analyser
 Author: @037
 
@@ -11,6 +11,7 @@ import sys
 import hashlib
 from itertools import islice
 from autocorrect import Speller
+from _thread import start_new_thread
 
 DEBUG = 0
 TOP_LIST = 10
@@ -43,14 +44,14 @@ LOGO = '''
 
 '''
 
-def wpl_analyser(body, top=10):
+def wpl_analyser(status, thread_id):
     '''
     Function is designed to record number of words per line
     based on number of hits
     '''
-    
+    thread_print = "------[BEGIN WPL HITS ANALYSER]------" + '\n'
     wpl = {}
-    for lines in body:
+    for lines in parsed_words:
         word_count = len(lines)
         try:
             if(wpl[word_count] > 0):
@@ -61,31 +62,32 @@ def wpl_analyser(body, top=10):
     sorted_dict = {}
     for key in sorted(wpl, key=wpl.get, reverse=True):
         sorted_dict[key] = wpl[key]
-    print(f"[*] Top {top} words per line hits in body:")
+    thread_print += f"[*] Top {TOP_LIST} words per line hits in body:" + '\n'
     i = 0
     conjoined_string = ''
     for word in sorted_dict:
-        print(f"[*] {word}: {sorted_dict[word]}")
+        thread_print += f"[*] {word}: {sorted_dict[word]}" + '\n'
         conjoined_string += str(word) + ":"
         # We take the N-th rank word count hits
-        if i == top:
+        if i == TOP_LIST:
             break
         else:
             i += 1
     conjoined_checksum = hashlib.sha256(conjoined_string.encode()).hexdigest()
     STYLE_FINGERPRINT.append("W_" + conjoined_checksum)
-    print(f"[*] Top {top} WPL fingerprint: {conjoined_checksum}")
-    print()
+    thread_print += f"[*] Top {TOP_LIST} WPL fingerprint: {conjoined_checksum}" + '\n'
+    print(thread_print + '\n')
+    status[thread_id] = 1
 
 
-def cpw_analyser(body, top=10):
+def cpw_analyser(status, thread_id):
     '''
     Function is designed to record number of characters per word
     based on number of hits
     '''
-    
+    thread_print = "------[BEGIN CPW HITS ANALYSER]------" + '\n'
     cpw = {}
-    for lines in body:
+    for lines in parsed_words:
         for word in lines:
             word_length = len(word)
             try:
@@ -97,25 +99,26 @@ def cpw_analyser(body, top=10):
     sorted_dict = {}
     for key in sorted(cpw, key=cpw.get, reverse=True):
         sorted_dict[key] = cpw[key]
-    print(f"[*] Top {top} char per word hits in body:")
+    thread_print += f"[*] Top {TOP_LIST} char per word hits in body:" + '\n'
     i = 0
     conjoined_string = ''
     for word in sorted_dict:
-        print(f"[*] {word}: {sorted_dict[word]}")
+        thread_print += f"[*] {word}: {sorted_dict[word]}" + '\n'
         conjoined_string += str(word) + ":"
         # We take the N-th rank word frequent
-        if i == top:
+        if i == TOP_LIST:
             break
         else:
             i += 1
     conjoined_checksum = hashlib.sha256(conjoined_string.encode()).hexdigest()
     STYLE_FINGERPRINT.append("C_" + conjoined_checksum)
-    print(f"[*] Top {top} CPW fingerprint: {conjoined_checksum}")
-    print()
+    thread_print += f"[*] Top {TOP_LIST} CPW fingerprint: {conjoined_checksum}" + '\n'
+    print(thread_print + '\n')
+    status[thread_id] = 1
 
 
 
-def n_gram_analyser(body, n=3, top=10):
+def n_gram_analyser(status, thread_id):
     '''
     Function is designed to take in an integer factorial to count from
     Enumerates N-gram word pairings in a body of text
@@ -123,12 +126,12 @@ def n_gram_analyser(body, n=3, top=10):
     def chunk_list(input_list, n, shift=0):
         shifted_list = input_list[shift:] + input_list[:shift]
         return [shifted_list[i:i+n] for i in range(0, len(input_list), n)]
-    
-    for i in range(n, 1, -1):
-        print(f"[*] Taking {i}-gram of processed word list...")
+    thread_print = "------[BEGIN N-GRAM ANALYSER]------" + '\n'
+    for i in range(N_TERMS, 1, -1):
+        thread_print += f"[*] Taking {i}-gram of processed word list..." + '\n'
         word_frequency = {}
         for j in range(0, i):
-            for lines in body:
+            for lines in parsed_words:
                 chunked_lines = chunk_list(lines, i, j)
                 for chunk in chunked_lines:
                     words = ''
@@ -143,30 +146,31 @@ def n_gram_analyser(body, n=3, top=10):
         sorted_dict = {}
         for key in sorted(word_frequency, key=word_frequency.get, reverse=True):
             sorted_dict[key] = word_frequency[key]
-        print(f"[*] Top {top} {i}-gram factorial words in body:")
+        thread_print += f"[*] Top {TOP_LIST} {i}-gram factorial words in body:" + '\n'
         x = 0
         conjoined_string = ''
         for word in sorted_dict:
-            print(f"[*] {word}: {sorted_dict[word]}")
+            thread_print += f"[*] {word}: {sorted_dict[word]}" + '\n'
             conjoined_string += word
             # We take the N-th rank word frequent
-            if x == top:
+            if x == TOP_LIST:
                 break
             else:
                 x += 1
         conjoined_checksum = hashlib.sha256(conjoined_string.encode()).hexdigest()
         STYLE_FINGERPRINT.append("N_" + conjoined_checksum)
-        print(f"[*] Top {top} {i}-gram factorial words fingerprint: {conjoined_checksum}")
-        print()
+        thread_print += f"[*] Top {TOP_LIST} {i}-gram factorial words fingerprint: {conjoined_checksum}" + '\n'
+        print(thread_print + '\n')
+    status[thread_id] = 1
 
-def spelling_analyser(body, top=10):
+def spelling_analyser(status, thread_id):
     '''
     Function that takes in a body of text
     returns a list of spelling mistakes
     '''
-    
+    thread_print = "------[BEGIN SPELLING ANALYSER]------" + '\n'
     misspelling_frequency = {}
-    for lines in body:
+    for lines in parsed_words:
         for word in lines:
             correction = spell(word)
             if correction != word:
@@ -179,30 +183,31 @@ def spelling_analyser(body, top=10):
     sorted_dict = {}
     for key in sorted(misspelling_frequency, key=misspelling_frequency.get, reverse=True):
         sorted_dict[key] = misspelling_frequency[key]
-    print(f"[*] Top {top} misspelled words in body:")
+    thread_print += f"[*] Top {TOP_LIST} misspelled words in body:" + '\n'
     i = 0
     conjoined_string = ''
     for word in sorted_dict:
-        print(f"[*] {word}: {sorted_dict[word]}")
+        thread_print += f"[*] {word}: {sorted_dict[word]}" + '\n'
         conjoined_string += word
         # We take the N-th rank word frequent
-        if i == top:
+        if i == TOP_LIST:
             break
         else:
             i += 1
     conjoined_checksum = hashlib.sha256(conjoined_string.encode()).hexdigest()
     STYLE_FINGERPRINT.append("S_" + conjoined_checksum)
-    print(f"[*] Top {top} misspelled words fingerprint: {conjoined_checksum}")
-    print()
+    thread_print += f"[*] Top {TOP_LIST} misspelled words fingerprint: {conjoined_checksum}" + '\n'
+    print(thread_print + '\n')
+    status[thread_id] = 1
 
-def word_frequency_analyser(body, top=10):
+def word_frequency_analyser(status, thread_id):
     '''
     Function that takes in a body of text
     returns every word used and its frequency
     '''
-    
+    thread_print = "------[BEGIN WORD FREQUENCY ANALYSER]------" + '\n'
     word_frequency = {}
-    for lines in body:
+    for lines in parsed_words:
         for word in lines:
             try:
                 if(word_frequency[word] > 0):
@@ -213,21 +218,42 @@ def word_frequency_analyser(body, top=10):
     sorted_dict = {}
     for key in sorted(word_frequency, key=word_frequency.get, reverse=True):
         sorted_dict[key] = word_frequency[key]
-    print(f"[*] Top {top} encountered words in body:")
+    thread_print += f"[*] Top {TOP_LIST} encountered words in body:" + '\n'
     i = 0
     conjoined_string = ''
     for word in sorted_dict:
-        print(f"[*] {word}: {sorted_dict[word]}")
+        thread_print += f"[*] {word}: {sorted_dict[word]}" + '\n'
         conjoined_string += word
         # We take the N-th rank word frequent
-        if i == top:
+        if i == TOP_LIST:
             break
         else:
             i += 1
     conjoined_checksum = hashlib.sha256(conjoined_string.encode()).hexdigest()
     STYLE_FINGERPRINT.append("F_" + conjoined_checksum)
-    print(f"[*] Top {top} used words fingerprint: {conjoined_checksum}")
-    print()
+    thread_print += f"[*] Top {TOP_LIST} used words fingerprint: {conjoined_checksum}" + '\n'
+    print(thread_print + '\n')
+    status[thread_id] = 1
+    
+def thread_waiter(status):
+    waiter = 0
+    while(waiter == 0):
+        for x in status:
+            if x != 0:
+                waiter = 1
+            else:
+                waiter = 0
+                break
+
+def thread_creator(func, tupl, status, thread_id):
+    try:
+        # (row, query, status, threadid, config, )
+        start_new_thread(func, tupl)
+    except:
+        status.pop(len(status)-1)
+        thread_waiter(status)
+        status.extend([0]*1)
+        thread_creator(func, tupl, status, thread_id)
 
 
 if __name__ == "__main__":
@@ -235,7 +261,7 @@ if __name__ == "__main__":
     Main function for running multi threads for each analyser
     '''
     print(LOGO)
-    print("[*] LINGUANA v1.2 - Linguistics Analyser")
+    print("[*] LINGUANA v1.3 - Linguistics Analyser")
     spell = Speller(lang='en')
     if(len(sys.argv) > 2 and sys.argv[1] == '--input'):
         fn = sys.argv[2]
@@ -279,16 +305,15 @@ if __name__ == "__main__":
                     for word in parsed_words:
                         print(word)
                 print()
-                print("------[BEGIN WPL HITS ANALYSER]------")
-                wpl_analyser(parsed_words, top=10)
-                print("------[BEGIN CPW HITS ANALYSER]------")
-                cpw_analyser(parsed_words, top=10)
-                print("------[BEGIN WORD FREQUENCY ANALYSER]------")
-                word_frequency_analyser(parsed_words, TOP_LIST)
-                print("------[BEGIN N-GRAM ANALYSER]------")
-                n_gram_analyser(parsed_words, N_TERMS, TOP_LIST)
-                print("------[BEGIN SPELLING ANALYSER]------")
-                spelling_analyser(parsed_words, TOP_LIST)
+                status = []
+                thread_id = 0
+                threads = [wpl_analyser, cpw_analyser, word_frequency_analyser, n_gram_analyser, spelling_analyser]
+                for thread in threads:
+                    status.extend([0]*1)
+                    thread_creator(thread, (status, thread_id, ), status, thread_id)
+                    thread_id += 1
+                thread_waiter(status)
+                
                 print("------[BEGIN LINGUANA FINGERPRINT]------")
                 STYLE_FINGERPRINT.sort()
                 for fp in STYLE_FINGERPRINT:
