@@ -21,8 +21,26 @@ Maximum n-gram value: {{ form.n_terms }}
         {{ form.delim_field }}<br><br>
         {{ form.data_input.label }}<br>
         {{ form.data_input(cols=50, rows=10) }}<br>
+        <input type="file" id="fileInput" accept=".txt, .csv, .json">
+        <button id="uploadButton">Upload File</button>
         {{ form.submit() }}
     </form>
     <a href="/saved" target="_blank">> goto saved profiles</a>
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            var fileInput = document.getElementById('fileInput');
+            var textarea = document.getElementById('data_input');
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+                textarea.value = event.target.result;
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
 </body>
 </html>
