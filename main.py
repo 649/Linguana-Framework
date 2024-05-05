@@ -1,5 +1,5 @@
 '''
-LINGUANA v1.4
+LINGUANA v1.5
 Linguistics Fingerprint Analyser
 Author: https://x.com/037
 Repo: https://github.com/649/Linguana/
@@ -12,6 +12,8 @@ import sys
 import hashlib
 from autocorrect import Speller
 from _thread import start_new_thread
+import subprocess
+import time
 
 if(sys.argv[-1] == "--debug"):
     DEBUG = 1
@@ -243,6 +245,54 @@ def word_frequency_analyser(status, thread_id):
     thread_print += f"[*] Top {TOP_LIST} used words fingerprint: {conjoined_checksum}" + '\n'
     print(thread_print + '\n')
     status[thread_id] = 1
+
+def category_analyser(status, thread_id):
+    '''
+    Function that takes in a body of text
+    returns a list of categories described 
+
+    Requires compiling llama.cpp and placing it in the right folder listed below
+
+    It also requires obtaining Llama Guard 2 weights converted in GGUF as well.
+    NOTE: You do NOT need Llama weights specifically. Any GGUF model can work.
+    '''
+    # To mix stdout and stderr into a single string
+    # Check the operating system and use the respective command
+    thread_print =  "------[BEGIN CATEGORY ANALYSER]------" + '\n'
+    if os.name == 'nt':  # Windows
+        cmd = 'copy /Y ".\\vendor\\llama.guard\\prompt.txt" ".\\vendor\\llama.guard\\prompt_temp.txt"'
+        cmd2 = '.\\vendor\\llama.cpp\\main.exe -m .\\vendor\\llama.guard\\llama-guard-2-8b.f16.gguf -n 512 --repeat-penalty 1.0 -f .\\vendor\\llama.guard\\prompt_temp.txt'
+    else:  # Unix/Linux
+        cmd = 'cp "./vendor/llama.guard/prompt.txt" "./vendor/llama.guard/prompt_temp.txt"'
+        cmd2 = './vendor/llama.cpp/main -m ./vendor/llama.guard/llama-guard-2-8b.f16.gguf -n 512 --repeat-penalty 1.0 -f ./../llama.guard/prompt_temp.txt'
+    os.system(cmd)
+    words = ''
+    for lines in parsed_words:
+        for word in lines:
+            words += word + ' '
+    with open('./vendor/llama.guard/prompt_temp.txt', 'a') as f:
+        f.write(words + '\n')
+    time.sleep(5)
+    result = subprocess.Popen(
+        cmd2,
+        stdout = subprocess.PIPE,
+        stderr = subprocess.STDOUT,
+        shell = True,
+        universal_newlines = True # Python >= 3.7 also accepts "text=True"
+    )
+    stdout, stderr = result.communicate()
+    output = stdout
+    output = output.split(words)
+    output = output[1]
+    output = output.split('<|end_of_text|>')
+    output = output[0]
+    #if(DEBUG == 1):
+    thread_print += f"[*] Plaintext categories described fingerprint: {output}" + '\n'
+    conjoined_checksum = hashlib.sha256(output.encode()).hexdigest()
+    STYLE_FINGERPRINT.append("A_" + conjoined_checksum)
+    thread_print += f"[*] Categories described fingerprint: {conjoined_checksum}" + '\n'
+    print(thread_print + '\n')
+    status[thread_id] = 1
     
 def thread_waiter(status):
     waiter = 0
@@ -269,7 +319,7 @@ if __name__ == "__main__":
     Main function for running multi threads for each analyser
     '''
     print(LOGO)
-    print("[*] LINGUANA v1.4 - Linguistics Fingerprint Analyser")
+    print("[*] LINGUANA v1.5 - Linguistics Fingerprint Analyser")
     spell = Speller(lang='en')
     if(len(sys.argv) > 2 and sys.argv[1] == '--input'):
         fn = sys.argv[2]
@@ -316,7 +366,7 @@ if __name__ == "__main__":
                 print()
                 status = []
                 thread_id = 0
-                threads = [wpl_analyser, cpw_analyser, word_frequency_analyser, n_gram_analyser, spelling_analyser]
+                threads = [wpl_analyser, cpw_analyser, word_frequency_analyser, n_gram_analyser, spelling_analyser, category_analyser]
                 for thread in threads:
                     status.extend([0]*1)
                     thread_creator(thread, (status, thread_id, ), status, thread_id)

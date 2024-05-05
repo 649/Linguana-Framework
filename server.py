@@ -25,7 +25,7 @@ class DataForm(FlaskForm):
     input_field = StringField('Profile Name:')
     delim_field = StringField('Delimiters:')
     submit = SubmitField('Analyse')
-    version = '1.4'
+    version = '1.5'
     server = VERSION
     logo = main.LOGO
     top_list = main.TOP_LIST
@@ -53,7 +53,7 @@ def single_request(delimiter_list, data):
             main.parsed_words.append(line.split(' '))
     status = []
     thread_id = 0
-    threads = [main.wpl_analyser, main.cpw_analyser, main.word_frequency_analyser, main.n_gram_analyser, main.spelling_analyser]
+    threads = [main.wpl_analyser, main.cpw_analyser, main.word_frequency_analyser, main.n_gram_analyser, main.spelling_analyser, main.category_analyser]
     for thread in threads:
         status.extend([0]*1)
         main.thread_creator(thread, (status, thread_id, ), status, thread_id)

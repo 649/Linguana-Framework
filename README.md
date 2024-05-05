@@ -1,8 +1,10 @@
 # LINGUANA
-## Linguistics Analyser
-* Application designed for analyzing various forms of text
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/linguana.png)
+## Linguistics Fingerprint Analyser
+* Application designed for analysing linguistic properties of various texts
 * Builds fingerprints for classified text to associate authorship
 * Can do comparitive analysis on text, compare and contrast if two structures align
+* Can be scaled for better accuracy in some benchmarks
 
 ## Setup
 1. Install dependencies
@@ -25,12 +27,28 @@ python3 ./server.py
 ```
 
 ## Features
+* CLI and Web UI support
 * N-gram factorial style pairing
 * Spelling mistake tracking
 * Word frequency and usage
 * Words per line hits tracking
 * Characters per word hits tracking
+* Comparing fingerprint profiles
+* Local LLM classifier to mark content based on categories
 
 ## Future Plans
 * Create OCR features for picking apart non-text data
-* Llama Guard v2 integration for categorizing text
+* SQLite database toggle for persistent data storage
+* Changing of categories of interest prompt from web UI and CLI
+* Optimize everything more
+* Use Llama python bindings instead of llama.cpp directly
+
+## Gallery
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/linguana_dash.png)
+Linguana front web UI dashboard and CLI logs. Shows where documents can be uploaded or pasted, and various techniques in which they are analyzed.
+
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/linguana_saved.png)
+Linguana comparing saved fingerprints. Data is saved in memory. Allows for collaboration, data accessible across all visitors to contribute.
+
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/similar.png)
+Linguana using its classifier local LLM inference to notice the language data given falls under one of the defined categories of interest.
