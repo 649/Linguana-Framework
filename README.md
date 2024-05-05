@@ -50,5 +50,5 @@ Linguana front web UI dashboard and CLI logs. Shows where documents can be uploa
 ![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/main/images/linguana_saved.png)
 Linguana comparing saved fingerprints. Data is saved in memory. Allows for collaboration, data accessible across all visitors to contribute.
 
-![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/main/images/similar.png)
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/main/images/linguana_similar.png)
 Linguana using its classifier local LLM inference to notice the language data given falls under one of the defined categories of interest.
