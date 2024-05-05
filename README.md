@@ -1,5 +1,5 @@
 # LINGUANA
-![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/linguana.png)
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/main/images/linguana.png)
 ## Linguistics Fingerprint Analyser
 * Application designed for analysing linguistic properties of various texts
 * Builds fingerprints for classified text to associate authorship
@@ -44,11 +44,11 @@ python3 ./server.py
 * Use Llama python bindings instead of llama.cpp directly
 
 ## Gallery
-![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/linguana_dash.png)
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/main/images/linguana_dash.png)
 Linguana front web UI dashboard and CLI logs. Shows where documents can be uploaded or pasted, and various techniques in which they are analyzed.
 
-![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/linguana_saved.png)
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/main/images/linguana_saved.png)
 Linguana comparing saved fingerprints. Data is saved in memory. Allows for collaboration, data accessible across all visitors to contribute.
 
-![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/images/similar.png)
+![alt text](https://raw.githubusercontent.com/649/Linguana-Framework/main/images/similar.png)
 Linguana using its classifier local LLM inference to notice the language data given falls under one of the defined categories of interest.
